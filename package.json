@@ -1,0 +1,20 @@
+{
+  "name": "pigeotor",
+  "version": "0.0.1",
+  "description": "My own copy of twitter. In this project my target is to use typescript, express.js, handlebar and postgreSQL in one app. I gonna copy functional, design from twitter to show my skills.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dmutre/Pigeotor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dmutre/Pigeotor/issues"
+  },
+  "homepage": "https://github.com/Dmutre/Pigeotor#readme"
+}
