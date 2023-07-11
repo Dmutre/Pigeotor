@@ -17,9 +17,10 @@ app.set('view engine', '.hbs');
 app.set("views", "./src/views");
 app.set("layout", "layout");
 
-
+//Server routes
 app.use("/", authRouter);
 
+//Server listen on PORT
 app.listen(PORT, () => {
   console.log("We listen port: " + PORT);
 });
