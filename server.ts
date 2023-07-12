@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 //Routers
-const authRouter = require("./src/router/authRouter.js");
+const authRouter = require("./src/router/auth/authRouter.js");
 
 //Set view engine. We set handlebars
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });
