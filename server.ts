@@ -10,6 +10,7 @@ const app = express();
 
 //Routers
 const signUpRouter = require("./src/router/users/usersRouter.js");
+const menuRouter = require("./src/router/menu/menuRouter.js")
 
 //Set view engine. We set handlebars
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });
@@ -20,6 +21,9 @@ app.set("layout", "layout");
 app.use(bodyParser.json());
 
 //Server routes
+
+//Route to the main page
+app.use("/", menuRouter)
 app.use("/signup", signUpRouter);
 
 //Server listen on PORT

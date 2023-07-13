@@ -1,6 +1,6 @@
 "use strict";
 
-import { Pool } from 'pg';
+const { Pool } = require("pg");
 const DBConfig = require("../../config/DBConfig.js");
 
 const pool = new Pool( DBConfig );
