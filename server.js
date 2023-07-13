@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000;
 const app = express();
 //Routers
-const signUpRouter = require("./src/router/users/usersRouter.js");
+const authUpRouter = require("./src/router/users/usersRouter.js");
 const menuRouter = require("./src/router/menu/menuRouter.js");
 //Set view engine. We set handlebars
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Server routes
 //Route to the main page
 app.use("/", menuRouter);
-app.use("/signup", signUpRouter);
+app.use("/auth", authUpRouter);
 //Server listen on PORT
 app.listen(PORT, () => {
     console.log("We listen port: " + PORT);

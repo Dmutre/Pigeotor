@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 //Routers
-const signUpRouter = require("./src/router/users/usersRouter.js");
+const authUpRouter = require("./src/router/users/usersRouter.js");
 const menuRouter = require("./src/router/menu/menuRouter.js")
 
 //Set view engine. We set handlebars
@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Route to the main page
 app.use("/", menuRouter)
-app.use("/signup", signUpRouter);
+app.use("/auth", authUpRouter);
 
 //Server listen on PORT
 app.listen(PORT, () => {

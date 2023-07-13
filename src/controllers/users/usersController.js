@@ -14,13 +14,27 @@ const pool = new Pool(DBConfig);
 function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const status = "user";
-        console.log("Gotten data:\n" + JSON.stringify(req.body));
         const { username, email, password, name } = req.body;
         try {
             const query = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5)';
             const values = [username, email, password, name, status];
             yield pool.query(query, values);
-            res.status(201).json({ message: 'Користувач успішно створений' });
+            res.status(201).redirect("/");
+        }
+        catch (error) {
+            console.error('Помилка при створенні користувача:', error);
+            res.status(500).json({ message: 'Помилка сервера' });
+        }
+    });
+}
+function findUser(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { username, password } = req.body;
+        try {
+            const query = 'SELECT * FROM users WHERE username = $1 AND password = $2';
+            const values = [username, password];
+            const result = yield pool.query(query, values);
+            res.status(201).json(result.rows);
         }
         catch (error) {
             console.error('Помилка при створенні користувача:', error);
@@ -29,9 +43,14 @@ function createUser(req, res) {
     });
 }
 function signupMenu(req, res) {
-    res.render("signup/signupForm");
+    res.render("auth/signupForm");
+}
+function loginMenu(req, res) {
+    res.render("auth/login");
 }
 module.exports = {
     createUser,
     signupMenu,
+    loginMenu,
+    findUser,
 };
