@@ -14,6 +14,7 @@ const pool = new Pool(DBConfig);
 function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const status = "user";
+        console.log("Gotten data:\n" + JSON.stringify(req.body));
         const { username, email, password, name } = req.body;
         try {
             const query = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5)';
@@ -27,6 +28,10 @@ function createUser(req, res) {
         }
     });
 }
+function signupMenu(req, res) {
+    res.render("signup/signupForm");
+}
 module.exports = {
-    createUser
+    createUser,
+    signupMenu,
 };

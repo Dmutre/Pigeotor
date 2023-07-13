@@ -24,6 +24,11 @@ async function createUser(req: any, res: any) {
   }
 }
 
+function signupMenu(req: any, res: any) {
+  res.render("signup/signupForm");
+}
+
 module.exports = {
-  createUser
+  createUser,
+  signupMenu,
 }

@@ -19,6 +19,8 @@ app.set('view engine', '.hbs');
 app.set("views", "./src/views");
 app.set("layout", "layout");
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 //Server routes
 
