@@ -7,7 +7,7 @@ require('dotenv').config();
 
 // Генерація access токена
 const generateAccessToken = (userId: number): string => {
-  const accessToken: string = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1s' });
+  const accessToken: string = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
   return accessToken;
 };
 
@@ -46,4 +46,9 @@ const verifyRefreshToken = (refreshToken: string): any | null => {
   }
 };
 
-console.log(verifyAccessToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTY4OTM0NDE4NiwiZXhwIjoxNjg5MzQ0MTg3fQ.gq99dCiHSRAmxdIIJPDJVTL-e02lto9RqnVvEFep8Ho"));
+module.exports = {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+}

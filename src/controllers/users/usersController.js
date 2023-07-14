@@ -10,15 +10,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const { Pool } = require("pg");
 const DBConfig = require("../../config/DBConfig.js");
+const token = require("../../middleware/authmiddleware.js");
 const pool = new Pool(DBConfig);
 function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const status = "user";
         const { username, email, password, name } = req.body;
         try {
-            const query = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5)';
+            const query = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5) RETURNING id';
             const values = [username, email, password, name, status];
-            yield pool.query(query, values);
+            const result = yield pool.query(query, values);
+            const userId = result.rows[0].id;
+            const accessToken = token.generateAccessToken(userId);
+            const refreshToken = token.generateRefreshToken(userId);
+            res.cookie('access_token', accessToken, { httpOnly: true });
+            res.cookie('refresh_token', refreshToken, { httpOnly: true });
             res.status(201).redirect("/");
         }
         catch (error) {
@@ -34,7 +40,12 @@ function findUser(req, res) {
             const query = 'SELECT * FROM users WHERE username = $1 AND password = $2';
             const values = [username, password];
             const result = yield pool.query(query, values);
-            res.status(201).json(result.rows);
+            const userId = result.rows[0].id;
+            const accessToken = token.generateAccessToken(userId);
+            const refreshToken = token.generateRefreshToken(userId);
+            res.cookie('access_token', accessToken, { httpOnly: true });
+            res.cookie('refresh_token', refreshToken, { httpOnly: true });
+            res.status(201).redirect("/");
         }
         catch (error) {
             console.error('Помилка при створенні користувача:', error);
