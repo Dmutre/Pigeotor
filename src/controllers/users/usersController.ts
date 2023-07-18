@@ -2,7 +2,7 @@
 
 const { Pool } = require("pg");
 const DBConfig = require("../../config/DBConfig.js");
-const token = require("../../middleware/authmiddleware.js");
+const token = require("../../middleware/JWTmiddleware.js");
 
 const pool = new Pool( DBConfig );
 

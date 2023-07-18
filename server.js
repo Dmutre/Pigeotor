@@ -6,10 +6,12 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 3000;
 const app = express();
+//Middlewares
+const { authenticateToken } = require("./src/middleware/JWTmiddleware.js");
 //Routers
 const authUpRouter = require("./src/router/users/usersRouter.js");
 const menuRouter = require("./src/router/menu/menuRouter.js");
-//Set view engine. We set handlebars
+//Set view engine and others packages for server, as cookie and body parsers.
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });
 app.engine('.hbs', handlebars.engine);
 app.set('view engine', '.hbs');
@@ -18,6 +20,8 @@ app.set("layout", "layout");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+//Use middleware
+app.use(authenticateToken);
 //Server routes
 //Route to the main page
 app.use("/", menuRouter);
