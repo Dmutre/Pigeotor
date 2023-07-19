@@ -3,17 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authenticateToken = exports.verifyRefreshToken = exports.verifyAccessToken = exports.generateRefreshToken = exports.generateAccessToken = void 0;
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const ACCESS_TOKEN_EXPIRATION = '10s';
+const ACCESS_TOKEN_EXPIRATION = '15m';
 const REFRESH_TOKEN_EXPIRATION = '2d';
 // Генерація access токена
 const generateAccessToken = (userId) => {
-    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { exp: ACCESS_TOKEN_EXPIRATION });
+    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
     return accessToken;
 };
 exports.generateAccessToken = generateAccessToken;
 // Генерація refresh токена
 const generateRefreshToken = (userId) => {
-    const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { exp: REFRESH_TOKEN_EXPIRATION });
+    const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION });
     return refreshToken;
 };
 exports.generateRefreshToken = generateRefreshToken;
@@ -41,12 +41,8 @@ const verifyRefreshToken = (refreshToken) => {
 };
 exports.verifyRefreshToken = verifyRefreshToken;
 function authenticateToken(req, res, next) {
-    /*    const accessToken: string = req.cookie.access_token;
-      const refreshToken: string = req.cookie.refresh_token;
-    
-      if(!accessToken || !refreshToken) {
-        res.json("You have no access token");
-      } */
+    const accessToken = req.cookies.access_token;
+    const refreshToken = req.cookies.refresh_token;
     console.log(req.cookies);
     next();
 }

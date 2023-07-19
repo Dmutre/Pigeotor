@@ -6,14 +6,13 @@ const token = require("../../middleware/JWTmiddleware.js");
 
 const pool = new Pool( DBConfig );
 
-async function createUser(req: any, res: any) {
-  const status: string = "user";
+async function createUser(req: Request, res: Response) {
   const { username, email, password, name }: 
   { username: string, email: string, password: string, name: string } = req.body;
 
   try {
-    const query: string = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const values: string[] = [username, email, password, name, status];
+    const query: string = 'INSERT INTO users (username, email, password, name) VALUES ($1, $2, $3, $4) RETURNING id';
+    const values: string[] = [username, email, password, name];
 
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
@@ -31,7 +30,7 @@ async function createUser(req: any, res: any) {
   }
 }
 
-async function findUser(req: any, res: any) {
+async function findUser(req: Request, res: Response) {
   const { username, password}: 
   { username: string, password: string } = req.body;
 
@@ -55,12 +54,33 @@ async function findUser(req: any, res: any) {
   }
 }
 
-function signupMenu(req: any, res: any) {
+function signupMenu(req: Request, res: Response) {
   res.render("auth/signupForm");
 }
 
-function loginMenu(req: any, res: any) {
+function loginMenu(req: Request, res: Response) {
   res.render("auth/login");
+}
+
+async function getUserProfile(req: Request, res: Response) {
+  const data = token.verifyRefreshToken(req.cookies.refresh_token)
+
+  try {
+    const query: string = 'SELECT * FROM users WHERE id = $1';
+    const values: string[] = [data.userId];
+
+    const result: any = await pool.query(query, values);
+    console.log(result.rows[0]);
+
+    res.render("profile/main", {result: result.rows[0]});
+  } catch(error) {
+    console.error('Помилка при створенні користувача:', error);
+    res.render("profile/main", ({ result: "Error" }));
+  }
+}
+
+function updateUserProfile(req: Request, res: Response) {
+  res.render("profile/main");
 }
 
 module.exports = {
@@ -68,4 +88,6 @@ module.exports = {
   signupMenu,
   loginMenu,
   findUser,
+  getUserProfile,
+  updateUserProfile
 }

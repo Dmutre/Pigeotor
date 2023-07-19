@@ -14,11 +14,10 @@ const token = require("../../middleware/JWTmiddleware.js");
 const pool = new Pool(DBConfig);
 function createUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const status = "user";
         const { username, email, password, name } = req.body;
         try {
-            const query = 'INSERT INTO users (username, email, password, name, status) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-            const values = [username, email, password, name, status];
+            const query = 'INSERT INTO users (username, email, password, name) VALUES ($1, $2, $3, $4) RETURNING id';
+            const values = [username, email, password, name];
             const result = yield pool.query(query, values);
             const userId = result.rows[0].id;
             const accessToken = token.generateAccessToken(userId);
@@ -59,9 +58,30 @@ function signupMenu(req, res) {
 function loginMenu(req, res) {
     res.render("auth/login");
 }
+function getUserProfile(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const data = token.verifyRefreshToken(req.cookies.refresh_token);
+        try {
+            const query = 'SELECT * FROM users WHERE id = $1';
+            const values = [data.userId];
+            const result = yield pool.query(query, values);
+            console.log(result.rows[0]);
+            res.render("profile/main", { result: result.rows[0] });
+        }
+        catch (error) {
+            console.error('Помилка при створенні користувача:', error);
+            res.render("profile/main", ({ result: "Error" }));
+        }
+    });
+}
+function updateUserProfile(req, res) {
+    res.render("profile/main");
+}
 module.exports = {
     createUser,
     signupMenu,
     loginMenu,
     findUser,
+    getUserProfile,
+    updateUserProfile
 };
