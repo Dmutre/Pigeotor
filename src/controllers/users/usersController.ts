@@ -31,7 +31,7 @@ async function createUser(req: Request, res: Response) {
 }
 
 async function findUser(req: Request, res: Response) {
-  const { username, password}: 
+  const { username, password }: 
   { username: string, password: string } = req.body;
 
   try {
@@ -47,7 +47,7 @@ async function findUser(req: Request, res: Response) {
     res.cookie('access_token', accessToken, { httpOnly: true });
     res.cookie('refresh_token', refreshToken, { httpOnly: true });
 
-    res.status(201).redirect("/");
+    res.status(201).redirect("/profile");
   } catch(error) {
     console.error('Помилка при створенні користувача:', error);
     res.status(500).json({ message: 'Помилка сервера' });
@@ -63,6 +63,9 @@ function loginMenu(req: Request, res: Response) {
 }
 
 async function getUserProfile(req: Request, res: Response) {
+  if(req.isGuest === true) {
+    res.render("profile/main", { result: "You are guest" });
+  }
   const data = token.verifyRefreshToken(req.cookies.refresh_token)
 
   try {
@@ -83,11 +86,18 @@ function updateUserProfile(req: Request, res: Response) {
   res.render("profile/main");
 }
 
+function logout(req: Request, res: Response) {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  res.redirect("/");
+}
+
 module.exports = {
   createUser,
   signupMenu,
   loginMenu,
   findUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  logout,
 }

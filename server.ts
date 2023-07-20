@@ -13,7 +13,7 @@ const app = express();
 const { authenticateToken } = require("./src/middleware/JWTmiddleware.js");
 
 //Routers
-const authUpRouter = require("./src/router/users/usersRouter.js");
+const authRouter = require("./src/router/users/usersRouter.js");
 const menuRouter = require("./src/router/menu/menuRouter.js");
 
 //Set view engine and others packages for server, as cookie and body parsers.
@@ -33,7 +33,7 @@ app.use(authenticateToken);
 
 //Route to the main page
 app.use("/", menuRouter)
-app.use("/auth", authUpRouter);
+app.use("/auth", authRouter);
 
 //Server listen on PORT
 app.listen(PORT, () => {

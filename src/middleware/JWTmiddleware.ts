@@ -19,8 +19,14 @@ const generateRefreshToken = (userId: number): string => {
   return refreshToken;
 };
 
+const updateAccessToken = (refreshToken: string): string => {
+  const decodedRefreshToken: Object = verifyRefreshToken(refreshToken);
+  const newAccessToken: string = generateAccessToken(decodedRefreshToken.userId);
+  return newAccessToken;
+}
+
 // Перевірка access токена
-const verifyAccessToken = (accessToken: string): any | null => {
+const verifyAccessToken = (accessToken: string | null): any | null => {
   try {
     const decoded: any = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     return decoded;
@@ -30,7 +36,7 @@ const verifyAccessToken = (accessToken: string): any | null => {
 };
 
 // Перевірка refresh токена
-const verifyRefreshToken = (refreshToken: string): any | null => {
+const verifyRefreshToken = (refreshToken: string | null): any | null => {
   try {
     const decoded: any = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     return decoded;
@@ -40,12 +46,34 @@ const verifyRefreshToken = (refreshToken: string): any | null => {
   }
 };
 
-function authenticateToken(req: any, res: any, next: Function) {
-  const accessToken: string = req.cookies.access_token;
-  const refreshToken: string = req.cookies.refresh_token; 
+function authenticateToken(req: Request, res: Response, next: Function) {
+  const accessToken: string | undefined = req.cookies.access_token;
+  const refreshToken: string | undefined = req.cookies.refresh_token; 
 
   console.log(req.cookies);
+  console.log("Acess token: " + accessToken + "\nRefresh token: " + refreshToken);
+  if (!accessToken && !refreshToken) {
+    req.isGuest = true;
+    return next();
+  }
 
+  console.log("We are here");
+
+  const decodedAccessToken: Object | null = verifyAccessToken(accessToken);
+  const decodedRefreshToken: Object | null = verifyRefreshToken(refreshToken);
+
+  if (decodedRefreshToken === null) {
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+    req.isGuest = true;
+    next();
+  } else if (decodedAccessToken === null && decodedRefreshToken !== null) {
+    const newAccessToken: string = updateAccessToken(refreshToken);
+    res.cookie('access_token', newAccessToken, { httpOnly: true });
+    req.isGuest = false;
+    next();
+  }
+  req.isGuest = false;
   next();
 }
 

@@ -10,15 +10,15 @@ async function createTables() {
   const client = await pool.connect();
   try {
     await client.query(`
-      CREATE TABLE users (
-        id SERIAL PRIMARY KEY,
-        username VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        status VARCHAR(20) NOT NULL
-      );
+    CREATE TABLE users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(50) NOT NULL UNIQUE,
+      email VARCHAR(100) NOT NULL UNIQUE,
+      password VARCHAR(100) NOT NULL,
+      name VARCHAR(100) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      role_id INTEGER NOT NULL DEFAULT 2 REFERENCES roles(id)
+    );
     `);
     console.log('Таблиця користувачів створена успішно');
   } catch (error) {

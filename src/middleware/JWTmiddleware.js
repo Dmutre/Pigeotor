@@ -17,6 +17,11 @@ const generateRefreshToken = (userId) => {
     return refreshToken;
 };
 exports.generateRefreshToken = generateRefreshToken;
+const updateAccessToken = (refreshToken) => {
+    const decodedRefreshToken = verifyRefreshToken(refreshToken);
+    const newAccessToken = generateAccessToken(decodedRefreshToken.userId);
+    return newAccessToken;
+};
 // Перевірка access токена
 const verifyAccessToken = (accessToken) => {
     try {
@@ -44,6 +49,27 @@ function authenticateToken(req, res, next) {
     const accessToken = req.cookies.access_token;
     const refreshToken = req.cookies.refresh_token;
     console.log(req.cookies);
+    console.log("Acess token: " + accessToken + "\nRefresh token: " + refreshToken);
+    if (!accessToken && !refreshToken) {
+        req.isGuest = true;
+        return next();
+    }
+    console.log("We are here");
+    const decodedAccessToken = verifyAccessToken(accessToken);
+    const decodedRefreshToken = verifyRefreshToken(refreshToken);
+    if (decodedRefreshToken === null) {
+        res.clearCookie("access_token");
+        res.clearCookie("refresh_token");
+        req.isGuest = true;
+        next();
+    }
+    else if (decodedAccessToken === null && decodedRefreshToken !== null) {
+        const newAccessToken = updateAccessToken(refreshToken);
+        res.cookie('access_token', newAccessToken, { httpOnly: true });
+        req.isGuest = false;
+        next();
+    }
+    req.isGuest = false;
     next();
 }
 exports.authenticateToken = authenticateToken;

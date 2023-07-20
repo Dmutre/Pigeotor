@@ -44,7 +44,7 @@ function findUser(req, res) {
             const refreshToken = token.generateRefreshToken(userId);
             res.cookie('access_token', accessToken, { httpOnly: true });
             res.cookie('refresh_token', refreshToken, { httpOnly: true });
-            res.status(201).redirect("/");
+            res.status(201).redirect("/profile");
         }
         catch (error) {
             console.error('Помилка при створенні користувача:', error);
@@ -60,6 +60,9 @@ function loginMenu(req, res) {
 }
 function getUserProfile(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (req.isGuest === true) {
+            res.render("profile/main", { result: "You are guest" });
+        }
         const data = token.verifyRefreshToken(req.cookies.refresh_token);
         try {
             const query = 'SELECT * FROM users WHERE id = $1';
@@ -77,11 +80,17 @@ function getUserProfile(req, res) {
 function updateUserProfile(req, res) {
     res.render("profile/main");
 }
+function logout(req, res) {
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+    res.redirect("/");
+}
 module.exports = {
     createUser,
     signupMenu,
     loginMenu,
     findUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    logout,
 };

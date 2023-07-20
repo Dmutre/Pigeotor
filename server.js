@@ -9,7 +9,7 @@ const app = express();
 //Middlewares
 const { authenticateToken } = require("./src/middleware/JWTmiddleware.js");
 //Routers
-const authUpRouter = require("./src/router/users/usersRouter.js");
+const authRouter = require("./src/router/users/usersRouter.js");
 const menuRouter = require("./src/router/menu/menuRouter.js");
 //Set view engine and others packages for server, as cookie and body parsers.
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });
@@ -25,7 +25,7 @@ app.use(authenticateToken);
 //Server routes
 //Route to the main page
 app.use("/", menuRouter);
-app.use("/auth", authUpRouter);
+app.use("/auth", authRouter);
 //Server listen on PORT
 app.listen(PORT, () => {
     console.log("We listen port: " + PORT);
