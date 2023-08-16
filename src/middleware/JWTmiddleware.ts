@@ -1,5 +1,7 @@
 "use strict";
 
+import { NextFunction } from "express";
+
 const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
@@ -46,14 +48,24 @@ const verifyRefreshToken = (refreshToken: string | null): any | null => {
   }
 };
 
-function authenticateToken(req: Request, res: Response, next: Function) {
+//If user doesn`t have something as refresh token, we define him like guest and let earlier created in database guest`s id
+function defineGuest(res: Response) {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  const access_token: string = generateAccessToken(process.env.GUEST_ID);
+  const refresh_token: string = generateRefreshToken(process.env.GUEST_ID);
+  res.cookie('access_token', access_token, { httpOnly: true });
+  res.cookie('refresh_token', refresh_token, { httpOnly: true });
+}
+
+//Big function that we use as middleware to handle with JWT security
+function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const accessToken: string | undefined = req.cookies.access_token;
   const refreshToken: string | undefined = req.cookies.refresh_token; 
 
-  console.log(req.cookies);
-  console.log("Acess token: " + accessToken + "\nRefresh token: " + refreshToken);
-  if (!accessToken && !refreshToken) {
-    req.isGuest = true;
+  if (!refreshToken) {
+    console.log("We welcome guest");
+    defineGuest(res);
     return next();
   }
 
@@ -63,18 +75,14 @@ function authenticateToken(req: Request, res: Response, next: Function) {
   const decodedRefreshToken: Object | null = verifyRefreshToken(refreshToken);
 
   if (decodedRefreshToken === null) {
-    res.clearCookie("access_token");
-    res.clearCookie("refresh_token");
-    req.isGuest = true;
-    next();
+    defineGuest(res);
+    return next();
   } else if (decodedAccessToken === null && decodedRefreshToken !== null) {
     const newAccessToken: string = updateAccessToken(refreshToken);
     res.cookie('access_token', newAccessToken, { httpOnly: true });
-    req.isGuest = false;
-    next();
+    return next();
   }
-  req.isGuest = false;
-  next();
+  return next();
 }
 
 

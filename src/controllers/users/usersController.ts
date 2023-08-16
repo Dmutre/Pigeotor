@@ -63,9 +63,6 @@ function loginMenu(req: Request, res: Response) {
 }
 
 async function getUserProfile(req: Request, res: Response) {
-  if(req.isGuest === true) {
-    res.render("profile/main", { result: "You are guest" });
-  }
   const data = token.verifyRefreshToken(req.cookies.refresh_token)
 
   try {
