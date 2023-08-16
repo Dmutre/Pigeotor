@@ -17,11 +17,7 @@ async function createUser(req: Request, res: Response) {
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
 
-    const accessToken: string = token.generateAccessToken(userId);
-    const refreshToken: string = token.generateRefreshToken(userId);
-
-    res.cookie('access_token', accessToken, { httpOnly: true });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true });
+    token.generateTokens(res, userId)//generate refresh and access tokens and send them in cookie
 
     res.status(201).redirect("/");
   } catch (error) {
@@ -41,11 +37,7 @@ async function findUser(req: Request, res: Response) {
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
 
-    const accessToken: string = token.generateAccessToken(userId);
-    const refreshToken: string = token.generateRefreshToken(userId);
-
-    res.cookie('access_token', accessToken, { httpOnly: true });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true });
+    token.generateTokens(res, userId)//generate refresh and access tokens and send them in cookie
 
     res.status(201).redirect("/profile");
   } catch(error) {
@@ -63,7 +55,7 @@ function loginMenu(req: Request, res: Response) {
 }
 
 async function getUserProfile(req: Request, res: Response) {
-  const data = token.verifyRefreshToken(req.cookies.refresh_token)
+  const data = token.verifyAccessToken(req.cookies.access_token)
 
   try {
     const query: string = 'SELECT * FROM users WHERE id = $1';

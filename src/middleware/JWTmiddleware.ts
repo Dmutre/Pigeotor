@@ -48,12 +48,23 @@ const verifyRefreshToken = (refreshToken: string | null): any | null => {
   }
 };
 
-//If user doesn`t have something as refresh token, we define him like guest and let earlier created in database guest`s id
-function defineGuest(res: Response) {
+const generateTokens = (res: Response, id: number): void => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
+  const access_token: string = generateAccessToken(id);
+  const refresh_token: string = generateRefreshToken(id);
+  res.cookie('access_token', access_token, { httpOnly: true });
+  res.cookie('refresh_token', refresh_token, { httpOnly: true }); 
+}
+
+//If user doesn`t have something as refresh token, we define him like guest and let earlier created in database guest`s id
+function defineGuest(res: Response): void {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+
   const access_token: string = generateAccessToken(process.env.GUEST_ID);
   const refresh_token: string = generateRefreshToken(process.env.GUEST_ID);
+  
   res.cookie('access_token', access_token, { httpOnly: true });
   res.cookie('refresh_token', refresh_token, { httpOnly: true });
 }
@@ -61,27 +72,33 @@ function defineGuest(res: Response) {
 //Big function that we use as middleware to handle with JWT security
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const accessToken: string | undefined = req.cookies.access_token;
-  const refreshToken: string | undefined = req.cookies.refresh_token; 
+  const refreshToken: string | undefined = req.cookies.refresh_token;
 
-  if (!refreshToken) {
-    console.log("We welcome guest");
+  if (!refreshToken || refreshToken === '') {
     defineGuest(res);
     return next();
   }
 
-  console.log("We are here");
+  if(!accessToken) {
+    const newAccessToken: string = updateAccessToken(refreshToken);
+    res.cookie('access_token', newAccessToken, { httpOnly: true });
+    res.redirect("/");
+  }
 
   const decodedAccessToken: Object | null = verifyAccessToken(accessToken);
   const decodedRefreshToken: Object | null = verifyRefreshToken(refreshToken);
 
-  if (decodedRefreshToken === null) {
-    defineGuest(res);
-    return next();
-  } else if (decodedAccessToken === null && decodedRefreshToken !== null) {
+  if(decodedAccessToken === null && decodedRefreshToken !== null) {
+
     const newAccessToken: string = updateAccessToken(refreshToken);
     res.cookie('access_token', newAccessToken, { httpOnly: true });
     return next();
+  } else if(decodedRefreshToken === null) {
+    
+    defineGuest(res);
+    return next();
   }
+
   return next();
 }
 
@@ -89,6 +106,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
 export {
   generateAccessToken,
   generateRefreshToken,
+  generateTokens,
   verifyAccessToken,
   verifyRefreshToken,
   authenticateToken,
