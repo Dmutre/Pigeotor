@@ -32,7 +32,7 @@ app.use(authenticateToken);
 //Server routes
 
 //Route to the main page
-app.use("/", menuRouter)
+app.use("/", menuRouter);
 app.use("/auth", authRouter);
 
 //Server listen on PORT

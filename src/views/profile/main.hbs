@@ -1,6 +1,17 @@
-<h1>{{ result }}</h1>
-<p>Email: {{ result.email }}</p>
-<p>Username: {{ result.username }}</p>
-<p>Password: {{ result.password }}</p>
-<p>Name: {{ result.name }}</p>
-<button><a href="/">Go to main menu</a></button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <h1>Welcome to {{ username }}'s Profile!</h1>
+  <p>This is the profile page for user {{ username }}.</p>
+  <p>User ID: {{ result.id }}</p>
+  <p>Email: {{ result.email }}</p>
+  <p>Username: {{ result.username }}</p>
+  <p>Password: {{ result.password }}</p>
+  <p>Name: {{ result.name }}</p>
+  <button><a href="/">Go to main menu</a></button>
+</body>
+</html>

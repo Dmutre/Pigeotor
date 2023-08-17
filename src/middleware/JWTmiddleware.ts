@@ -51,8 +51,10 @@ const verifyRefreshToken = (refreshToken: string | null): any | null => {
 const generateTokens = (res: Response, id: number): void => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
+
   const access_token: string = generateAccessToken(id);
   const refresh_token: string = generateRefreshToken(id);
+  
   res.cookie('access_token', access_token, { httpOnly: true });
   res.cookie('refresh_token', refresh_token, { httpOnly: true }); 
 }

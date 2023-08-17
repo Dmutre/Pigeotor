@@ -51,23 +51,28 @@ function signupMenu(req: Request, res: Response) {
 }
 
 function loginMenu(req: Request, res: Response) {
+  res.locals.title = "Pigeotor login";
   res.render("auth/login");
 }
 
 async function getUserProfile(req: Request, res: Response) {
-  const data = token.verifyAccessToken(req.cookies.access_token)
+  const data = token.verifyAccessToken(req.cookies.access_token);
 
   try {
     const query: string = 'SELECT * FROM users WHERE id = $1';
     const values: string[] = [data.userId];
 
-    const result: any = await pool.query(query, values);
-    console.log(result.rows[0]);
+    const result: object = await pool.query(query, values);
+    const username: string = result.rows[0].username;
 
-    res.render("profile/main", {result: result.rows[0]});
+    res.locals.title = username;
+
+    res.render("profile/main", {username, result: result.rows[0]});
   } catch(error) {
     console.error('Помилка при створенні користувача:', error);
-    res.render("profile/main", ({ result: "Error" }));
+    const username: string = "error";
+    res.locals.title = username;
+    res.render("profile/main", {username, result: "Error"} );
   }
 }
 
