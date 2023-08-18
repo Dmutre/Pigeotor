@@ -1,14 +1,14 @@
 "use strict";
 
 const { Pool } = require("pg");
-const DBConfig = require("../../config/DBConfig.js");
-const token = require("../../middleware/JWTmiddleware.js");
+const DBConfig = require("../../config/DBConfig");
+const token = require("../../middleware/JWTmiddleware");
 
 const pool = new Pool( DBConfig );
 
 async function createUser(req: Request, res: Response) {
-  const { username, email, password, name }: 
-  { username: string, email: string, password: string, name: string } = req.body;
+  const { username, email, password, name, bio, profilePicture: string }: 
+  { username: string, email: string, password: string, name: string, bio: string, profilePicture: string } = req.body;
 
   try {
     const query: string = 'INSERT INTO users (username, email, password, name) VALUES ($1, $2, $3, $4) RETURNING id';

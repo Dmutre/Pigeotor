@@ -1,7 +1,7 @@
 "use strict";
 
 const router = require("express").Router();
-const usersController = require("../../controllers/users/usersController.js");
+const usersController = require("../../controllers/users/usersController");
 
 router.get("/", usersController.signupMenu);
 router.get("/login", usersController.loginMenu);

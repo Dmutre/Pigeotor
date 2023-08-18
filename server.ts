@@ -10,11 +10,11 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 //Middlewares
-const { authenticateToken } = require("./src/middleware/JWTmiddleware.js");
+const { authenticateToken } = require("./src/middleware/JWTmiddleware");
 
 //Routers
-const authRouter = require("./src/router/users/usersRouter.js");
-const menuRouter = require("./src/router/menu/menuRouter.js");
+const authRouter = require("./src/router/users/usersRouter");
+const menuRouter = require("./src/router/menu/menuRouter");
 
 //Set view engine and others packages for server, as cookie and body parsers.
 const handlebars = exphbs.create({ extname: '.hbs', defaultLayout: "layout" });

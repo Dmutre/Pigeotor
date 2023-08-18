@@ -16,6 +16,8 @@ async function createTables() {
       email VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(100) NOT NULL,
       name VARCHAR(100) NOT NULL,
+      bio VARCHAR(150),
+      profile_picture BYTEA,
       created_at TIMESTAMP DEFAULT NOW(),
       role_id INTEGER NOT NULL DEFAULT 2 REFERENCES roles(id)
     );
