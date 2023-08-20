@@ -5,6 +5,8 @@ const express = require("express");
 const exphbs  = require("express-handlebars");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const fileUpload = require('express-fileupload');
+
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -25,6 +27,8 @@ app.set("layout", "layout");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(fileUpload());
+
 
 //Use middleware
 app.use(authenticateToken);

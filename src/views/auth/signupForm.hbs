@@ -1,5 +1,5 @@
-<form action="/auth/signup"method="POST">
-  <div>
+<form action="/auth/signup" method="POST" enctype="multipart/form-data">
+<div>
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required>
   </div>
@@ -21,7 +21,7 @@
   </div>
     <div>
     <label for="profilePicture">Profile Picture:</label>
-    <input type="file" id="profilePicture" name="profilePicture">
+    <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
   </div>
   <button type="submit">Register</button>
 </form>

@@ -3,21 +3,28 @@
 const { Pool } = require("pg");
 const DBConfig = require("../../config/DBConfig");
 const token = require("../../middleware/JWTmiddleware");
+const fs = require("fs");
 
 const pool = new Pool( DBConfig );
 
-async function createUser(req: Request, res: Response) {
-  const { username, email, password, name, bio, profilePicture: string }: 
-  { username: string, email: string, password: string, name: string, bio: string, profilePicture: string } = req.body;
+async function createUser(req, res) {
+  const { username, email, password, name, bio }: 
+  { username: string, email: string, password: string, name: string, bio: string } = req.body;
 
   try {
-    const query: string = 'INSERT INTO users (username, email, password, name) VALUES ($1, $2, $3, $4) RETURNING id';
-    const values: string[] = [username, email, password, name];
+    const file = req.files.profilePicture; // Тепер req.files має бути визначене
 
-    const result: any = await pool.query(query, values);
-    const userId: number = result.rows[0].id;
+    if (!file) {
+      throw new Error('Profile picture is missing');
+    }
 
-    token.generateTokens(res, userId)//generate refresh and access tokens and send them in cookie
+    const base64Image = file.data.toString('base64');
+    console.log(base64Image);
+
+    const query: string = 'INSERT INTO users (username, email, password, name, profile_picture) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const values: any[] = [username, email, password, name, base64Image];
+
+    // ... інші дії для збереження користувача ...
 
     res.status(201).redirect("/");
   } catch (error) {
@@ -25,6 +32,7 @@ async function createUser(req: Request, res: Response) {
     res.status(500).json({ message: 'Помилка сервера' });
   }
 }
+
 
 async function findUser(req: Request, res: Response) {
   const { username, password }: 
@@ -66,6 +74,7 @@ async function getUserProfile(req: Request, res: Response) {
     const username: string = result.rows[0].username;
 
     res.locals.title = username;
+    console.log(result.rows[0]);
 
     res.render("profile/main", {username, result: result.rows[0]});
   } catch(error) {
