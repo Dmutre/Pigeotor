@@ -35,7 +35,6 @@ async function createUser(req, res) {
   }
 }
 
-
 async function findUser(req: Request, res: Response) {
   const { username, password }: 
   { username: string, password: string } = req.body;
@@ -74,7 +73,6 @@ async function getUserProfile(req: Request, res: Response) {
     const username: string = result.rows[0].username;
 
     res.locals.title = username;
-    console.log(result.rows[0]);
 
     res.render("profile/main", {username, result: result.rows[0]});
   } catch(error) {
@@ -83,6 +81,10 @@ async function getUserProfile(req: Request, res: Response) {
     res.locals.title = username;
     res.render("profile/main", {username, result: "Error"} );
   }
+}
+
+function getEditProfile(req: Request, res: Response) {
+  res.render("profile/edit");
 }
 
 function updateUserProfile(req: Request, res: Response) {
@@ -101,6 +103,7 @@ module.exports = {
   loginMenu,
   findUser,
   getUserProfile,
+  getEditProfile,
   updateUserProfile,
   logout,
 }
