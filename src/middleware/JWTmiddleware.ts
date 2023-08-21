@@ -24,6 +24,7 @@ const generateRefreshToken = (userId: number): string => {
 const updateAccessToken = (refreshToken: string): string => {
   const decodedRefreshToken: Object = verifyRefreshToken(refreshToken);
   const newAccessToken: string = generateAccessToken(decodedRefreshToken.userId);
+  console.log("New access token was generated");
   return newAccessToken;
 }
 
@@ -94,7 +95,7 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
 
     const newAccessToken: string = updateAccessToken(refreshToken);
     res.cookie('access_token', newAccessToken, { httpOnly: true });
-    return next();
+    res.redirect("/");
   } else if(decodedRefreshToken === null) {
     
     defineGuest(res);

@@ -19,12 +19,14 @@ async function createUser(req, res) {
     }
 
     const base64Image = file.data.toString('base64');
-    console.log(base64Image);
 
     const query: string = 'INSERT INTO users (username, email, password, name, profile_picture) VALUES ($1, $2, $3, $4, $5) RETURNING id';
     const values: any[] = [username, email, password, name, base64Image];
 
-    // ... інші дії для збереження користувача ...
+    const result: any = await pool.query(query, values);
+    const userId: number = result.rows[0].id;
+
+    token.generateTokens(res, userId);//generate refresh and access tokens and send them in cookie
 
     res.status(201).redirect("/");
   } catch (error) {
@@ -44,8 +46,6 @@ async function findUser(req: Request, res: Response) {
 
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
-
-    token.generateTokens(res, userId)//generate refresh and access tokens and send them in cookie
 
     res.status(201).redirect("/profile");
   } catch(error) {
