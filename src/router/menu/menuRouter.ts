@@ -8,7 +8,7 @@ router.get("/", menuController.lobby);
 router.get("/profile", getUserProfile);
 router.get("/profile/edit", getEditProfile)
 
-router.put("/profile/edit", updateUserProfile)
+router.put("/editProfile", updateUserProfile)
 
 
 module.exports = router;

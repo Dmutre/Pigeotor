@@ -6,6 +6,7 @@ const exphbs  = require("express-handlebars");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require('express-fileupload');
+const methodOverride = require("method-override");
 
 
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.set('view engine', '.hbs');
 app.set("views", "./src/views");
 app.set("layout", "layout");
 app.use(bodyParser.json());
+app.use(methodOverride("_method"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());

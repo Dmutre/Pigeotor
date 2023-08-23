@@ -7,12 +7,12 @@ const fs = require("fs");
 
 const pool = new Pool( DBConfig );
 
-async function createUser(req, res) {
+async function createUser(req: Request, res: Response) {
   const { username, email, password, name, bio }: 
   { username: string, email: string, password: string, name: string, bio: string } = req.body;
 
   try {
-    const file = req.files.profilePicture; // Тепер req.files має бути визначене
+    const file: any = req.files.profilePicture; // Тепер req.files має бути визначене
 
     if (!file) {
       throw new Error('Profile picture is missing');
@@ -20,8 +20,8 @@ async function createUser(req, res) {
 
     const base64Image = file.data.toString('base64');
 
-    const query: string = 'INSERT INTO users (username, email, password, name, profile_picture) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const values: any[] = [username, email, password, name, base64Image];
+    const query: string = 'INSERT INTO users (username, email, password, name, bio, profile_picture) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id';
+    const values: any[] = [username, email, password, name, bio, base64Image];
 
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
@@ -83,12 +83,51 @@ async function getUserProfile(req: Request, res: Response) {
   }
 }
 
-function getEditProfile(req: Request, res: Response) {
-  res.render("profile/edit");
+async function getEditProfile(req: Request, res: Response) {
+  res.locals.title = "Edit profile";
+  const data = token.verifyAccessToken(req.cookies.access_token);
+  
+  try {
+    const query: string = 'SELECT * FROM users WHERE id = $1';
+    const values: string[] = [data.userId];
+    const result: object = await pool.query(query, values);
+
+    const profile: object = {
+      username: result.rows[0].username,
+      bio: result.rows[0].bio,
+    }
+    console.log(profile);
+
+    res.render("profile/edit", {profile: profile});
+  } catch(err) {
+    console.log(err);
+    res.redirect("/");
+  }
 }
 
-function updateUserProfile(req: Request, res: Response) {
-  res.render("profile/main");
+async function updateUserProfile(req: Request, res: Response) {
+  const data = token.verifyAccessToken(req.cookies.access_token);
+  
+  try {
+    let query: string;
+    let values: any[];
+
+    if (!req.body.profilePicture) {
+      query = 'UPDATE users SET username = $1, bio = $2 WHERE id = $3';
+      values = [req.body.username, req.body.bio, data.userId];
+    } else {
+      query = 'UPDATE users SET username = $1, bio = $2, profile_picture = $3 WHERE id = $4';
+      values = [req.body.username, req.body.bio, req.body.profilePicture, data.userId];
+    }
+    console.log("We are here");
+
+    await pool.query(query, values);
+    
+    res.redirect("/profile");
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
 }
 
 function logout(req: Request, res: Response) {
