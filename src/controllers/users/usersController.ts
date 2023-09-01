@@ -46,6 +46,8 @@ async function findUser(req: Request, res: Response) {
     const result: any = await pool.query(query, values);
     const userId: number = result.rows[0].id;
 
+    token.generateTokens(res, userId);
+
     res.status(201).redirect("/profile");
   } catch(error) {
     console.error('Помилка при створенні користувача:', error);
@@ -111,15 +113,11 @@ async function updateUserProfile(req: Request, res: Response) {
   try {
     let query: string;
     let values: any[];
+    const file: any = req.files.profilePicture;
 
-    if (!req.body.profilePicture) {
-      query = 'UPDATE users SET username = $1, bio = $2 WHERE id = $3';
-      values = [req.body.username, req.body.bio, data.userId];
-    } else {
-      query = 'UPDATE users SET username = $1, bio = $2, profile_picture = $3 WHERE id = $4';
-      values = [req.body.username, req.body.bio, req.body.profilePicture, data.userId];
-    }
-    console.log("We are here");
+    query = 'UPDATE users SET username = $1, bio = $2, profile_picture = $3 WHERE id = $4';
+    const base64Image = file.data.toString('base64');
+    values = [req.body.username, req.body.bio, base64Image, data.userId];
 
     await pool.query(query, values);
     
