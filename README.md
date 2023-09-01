@@ -1,2 +1,2 @@
 # Pigiotor
-This is my first practice with JWT and authentification at all. I worked with SQL database ProstgreSQL, handlebars and some packages from npm. It is a good experience and base to develop large projects with authentigication and profile interface.
+This is my first practice with JWT, TypeScript and authentification at all. I worked with SQL database ProstgreSQL, handlebars and some packages from npm. It is a good experience and base to develop large projects with authentigication and profile interface.
